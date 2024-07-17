@@ -1,0 +1,63 @@
+{
+    "OpportunityCategory": {
+    "D": "Discretionary",
+    "M": "Mandatory",
+    "C": "Continuation",
+    "E": "Earmark",
+    "O": "Other"
+    },
+
+    "CategoryOfFundingActivity": {
+    "ACA": "Affordable Care Act",
+    "AG": "Agriculture",
+    "AR": "Arts",
+    "BC": "Business and Commerce",
+    "CD": "Community Development",
+    "CP": "Consumer Protection",
+    "DPR": "Disaster Prevention and Relief",
+    "ED": "Education",
+    "ELT": "Employment, Labor and Training",
+    "EN": "Energy",
+    "ENV": "Environment",
+    "FN": "Food and Nutrition",
+    "HL": "Health",
+    "HO": "Housing",
+    "HU": "Humanities",
+    "ISS": "Income Security and Social Services",
+    "IS": "Information and Statistics",
+    "LJL": "Law, Justice and Legal Services",
+    "NR": "Natural Resources",
+    "RA": "Recovery Act",
+    "RD": "Regional Development",
+    "ST": "Science and Technology and other Research and Development",
+    "T": "Transportation",
+    "O": "Other"
+    },
+
+    "FundingInstrumentType": {
+    "G": "Grant",
+    "CA": "Cooperative Agreement",
+    "O": "Other",
+    "PC": "Procurement Contract"
+    },
+
+    "EligibleApplicants": {
+    "99": "Unrestricted (i.e., open to any type of entity), subject to any clarification in text field entitled “Additional Information on Eligibility",
+    "00": "State governments",
+    "01": "County governments",
+    "02": "City or township governments",
+    "04": "Special district governments",
+    "05": "Independent school districts",
+    "06": "Public and State controlled institutions of higher education",
+    "07": "Native American tribal governments (Federally recognized)",
+    "08": "Public housing authorities/Indian housing authorities",
+    "11": "Native American tribal organizations (other than Federally recognized tribal governments)",
+    "12": "Nonprofits having a 501 (c) (3) status with the IRS, other than institutions of higher education",
+    "13": "Nonprofits that do not have a 501 (c) (3) status with the IRS, other than institutions of higher education",
+    "20": "Private institutions of higher education",
+    "21": "Individuals",
+    "22": "For-profit organizations other than small businesses",
+    "23": "Small businesses",
+    "25": "Others"
+    }
+}

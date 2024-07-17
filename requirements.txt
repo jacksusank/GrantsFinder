@@ -1,0 +1,7 @@
+Flask
+flask-sqlalchemy
+sentence_transformers
+openai
+lxml
+python-dotenv
+flask-migrate
