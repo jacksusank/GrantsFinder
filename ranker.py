@@ -1,44 +1,41 @@
 from sklearn.metrics.pairwise import cosine_similarity
 from app import app, db
 from models import Opportunity
+import numpy as np
 
 def ranker(vector):
     """
-    This function performs a similarity search on the embeddings in the database and returns the 25 most similar opportunities
+    This function performs a similarity search on the embeddings in the database and returns the 25 most similar opportunities.
     
     Args:
-        vector (numpy array): The vector to compare against the embeddings in the database
+        vector (numpy array): The vector to compare against the embeddings in the database.
         
     Returns:
-        list: A list of the 25 most similar opportunities
+        list: A list of the 25 most similar opportunities.
     """
     with app.app_context():
-        page = 1
-        page_size = 100  # Adjust page size based on your database and performance needs
+        # Fetch all opportunities at once
+        opportunities = Opportunity.query.all()
+        
+        # Ensure the input vector is a numpy array
+        if not isinstance(vector, np.ndarray):
+            vector = np.array(vector)
+
         top_opportunities = []
 
-        while True:
-            opportunities = Opportunity.query.paginate(page=page, per_page=page_size, error_out=False).items
-
-            # If no more opportunities, break the loop
-            if not opportunities:
-                break
-
-            # Calculate cosine similarity with each opportunity's embedding_vector
-            for opportunity in opportunities:
-                if opportunity.embedding_vector:
-                    similarity = cosine_similarity([vector], [opportunity.embedding_vector])[0][0]
+        # Calculate cosine similarity with each opportunity's embedding_vector
+        for opportunity in opportunities:
+            if opportunity.embedding_vector:
+                opp_vector = np.array(opportunity.embedding_vector)
+                if vector.shape[0] == opp_vector.shape[0]:  # Ensure dimensions match
+                    similarity = cosine_similarity([vector], [opp_vector])[0][0]
                     top_opportunities.append((opportunity, similarity))
-
-            # Increment page for next batch
-            page += 1
 
     # Sort by similarity (descending)
     top_opportunities.sort(key=lambda x: x[1], reverse=True)
 
     # Return top 25 similar opportunities
     return top_opportunities[:25]
-
 
 
 if __name__ == "__main__":
