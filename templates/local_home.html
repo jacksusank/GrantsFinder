@@ -1,0 +1,233 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grant Finder</title>
+    <style>
+        body {
+            background-color: rgb(133, 202, 211);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            transition: all 0.5s ease;
+        }
+        header {
+            width: 100%;
+            background-color: #003366;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+        .main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            width: 100%;
+            transition: all 0.5s ease;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease;
+            text-align: center;
+        }
+        h2 {
+            color: #003366;
+            margin: 0;
+        }
+        label {
+            font-weight: bold;
+        }
+        textarea, button[type="submit"] {
+            padding: 12px;
+            font-size: 18px;
+            margin-top: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 200px; /* Increase height for paragraph input */
+        }
+        textarea::placeholder {
+            color: grey;
+        }
+        button[type="submit"] {
+            background-color: #003366;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button[type="submit"]:hover {
+            background-color: #005bb5;
+        }
+        .result-container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 15px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.5s ease;
+            text-align: left;
+            margin-top: 20px; 
+            position: relative;
+        }
+        .result-content {
+            white-space: pre-wrap;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 0; 
+            padding-top: 0; 
+        }
+        .result {
+            margin-top: 10px; 
+            border-top: 1px solid #ccc;
+            padding-top: 5px;
+        }
+        .error {
+            color: red;
+        }
+        .moved-up {
+            position: relative;
+            top: -50px;
+        }
+        .opportunity {
+            border: 1px solid #003366;
+            border-radius: 8px;
+            padding: 10px; 
+            margin-top: 0px;
+            margin-bottom: 0px; 
+            background-color: #f9f9f9;
+        }
+        .opportunity h3 {
+            color: #003366;
+            margin-top: 0;
+            margin-bottom: 5px; /* Reduced margin-bottom */
+        }
+        .opportunity p {
+            margin: 4px 0; /* Reduced margin */
+            font-size: 14px;
+            color: #333;
+        }
+        .opportunity strong {
+            color: #003366;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loader {
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #003366;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            display: none; /* Hide loader initially */
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Grant Finder</h1>
+    </header>
+    <div class="main">
+        <div class="container" id="queryContainer">
+            <h2>Find the Best Grants for Your Organization</h2><br>
+            <form id="queryForm" method="post" action="/">
+                <textarea id="query" name="query" placeholder="Enter a detailed description of your organization and needs..." required>{% if query is not none %}{{ query }}{% endif %}</textarea>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+        
+        <div class="loader" id="loader"></div> <!-- Loading Circle -->
+
+        <!-- Result Container -->
+        <div class="result-container" id="resultContainer">
+            <div id="result" class="result">
+                {% if response %}
+                <div class="result-content">
+                    {% if response == "I'm sorry, I couldn't find any relevant opportunities for you. Please try again with a different query." %}
+                    <p>{{ response }}</p>
+                    {% else %}
+                    {% set opportunities = response.split("-<") %}
+                    {% for opportunity in opportunities[:4] %}
+                    {% if opportunity.strip() %}
+                    <div class="opportunity">
+                        <h3>Opportunity</h3>
+                        <p><strong>Opportunity Title:</strong> {{ opportunity.split('\n')[1].split(':')[1].strip() }}</p>
+                        <p><strong>Opportunity ID:</strong> {{ opportunity.split('\n')[2].split(':')[1].strip() }}</p>
+                        <p><strong>Opportunity Number:</strong> {{ opportunity.split('\n')[3].split(':')[1].strip() }}</p>
+                        <p><strong>CFDA Number:</strong> {{ opportunity.split('\n')[4].split(':')[1].strip() }}</p>
+                        <p><strong>Description:</strong> {{ opportunity.split('\n')[5].split(':')[1].strip() }}</p>
+                        {% set grants_link = 'https:' + opportunity.split('\n')[6].split(':')[2].strip() if opportunity.split('\n')[6].split(':')|length > 2 else '#' %}
+                        <p><strong>Grants.gov URL:</strong> <a href= "{{ grants_info_link }}" target="_blank">{{ grants_info_link }}</a></p>                    </div>
+                        {% set additional_info_link = 'https:' + opportunity.split('\n')[7].split(':')[2].strip() if opportunity.split('\n')[7].split(':')|length > 2 else '#' %}
+                        <p><strong>Additional Information:</strong> <a href= "{{ additional_info_link }}" target="_blank">{{ additional_info_link }}</a></p>                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('queryForm');
+        const queryContainer = document.getElementById('queryContainer');
+        const resultContainer = document.getElementById('resultContainer');
+        const loader = document.getElementById('loader');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission to handle it with JS
+
+            loader.style.display = 'block'; // Show loader
+            resultContainer.style.display = 'none'; // Hide results
+
+            const formData = new FormData(form);
+            fetch(form.action, {
+                method: form.method,
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                resultContainer.innerHTML = data;
+                loader.style.display = 'none'; // Hide loader
+                resultContainer.style.display = 'block'; // Show results
+                queryContainer.style.display = 'none'; // Hide query form
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                loader.style.display = 'none'; // Hide loader in case of error
+                resultContainer.style.display = 'block'; // Show results (you might want to show an error message here)
+            });
+        });
+    </script>
+</body>
+</html>

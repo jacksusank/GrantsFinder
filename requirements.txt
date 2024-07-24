@@ -5,4 +5,5 @@ openai
 lxml
 python-dotenv
 flask-migrate
-vectorlite-py
+fastapi
+uvicorn

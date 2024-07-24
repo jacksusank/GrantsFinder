@@ -14,3 +14,7 @@ class Opportunity(db.Model):
 
     def get_embedding_vector(self):
         return self.embedding_vector
+    
+    # String version of the Opportunity object that includes the id, opportunity_id, and the first 100 characters of the long_text
+    def __str__(self):
+        return f'Opportunity: {self.id}, {self.opportunity_id}, {self.long_text}'
