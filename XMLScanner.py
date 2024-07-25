@@ -69,9 +69,9 @@ class CustomXMLLoader:
             docs.append(doc)
         return docs
 
-xml_file_path = "GrantsDBExtract20240607v2.xml"
+# xml_file_path = "GrantsDBExtract20240607v2.xml"
 # xml_file_path = "test.xml"
-loader = CustomXMLLoader()
-documents = loader.load(xml_file_path)
+# loader = CustomXMLLoader()
+# documents = loader.load(xml_file_path)
 
 
