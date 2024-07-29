@@ -1,6 +1,6 @@
 from sklearn.metrics.pairwise import cosine_similarity
 from app import db
-from models import Opportunity
+from models import Opportunity, OptimizedOpportunity
 
 
 def calculate_cosine_similarity(vector1, vector2):
@@ -22,4 +22,16 @@ def add_opportunity(opportunity_id, long_text, embedding_vector):
 def delete_opportunity(opportunity_id):
     opportunity = Opportunity.query.filter_by(opportunity_id=opportunity_id).first()
     db.session.delete(opportunity)
+    db.session.commit()
+
+def add_optimized_opportunity(opportunity_id, long_text, embedding_vector):
+    optimized_opportunity = OptimizedOpportunity(opportunity_id=opportunity_id, long_text=long_text)
+    optimized_opportunity.set_embedding_vector(embedding_vector)
+
+    db.session.add(optimized_opportunity)
+    db.session.commit()
+
+def delete_optimized_opportunity(opportunity_id):
+    optimized_opportunity = OptimizedOpportunity.query.filter_by(opportunity_id=opportunity_id).first()
+    db.session.delete(optimized_opportunity)
     db.session.commit()

@@ -6,5 +6,10 @@ from app import app, db
 with app.app_context():
     # Create all database tables
     db.create_all()
+    
+    # Create all tables for the new database bind
+    engine = db.engines['optimized']
+    with engine.connect() as connection:
+        db.metadata.create_all(connection)
 
-print("Database tables created successfully.")
+    print("Databases initialized successfully.")

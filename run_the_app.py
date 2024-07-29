@@ -28,7 +28,7 @@ load_dotenv()
 templates = Jinja2Templates(directory="templates")
 
 # Initialize models and connections
-model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
+model = SentenceTransformer('all-MiniLM-L6-v2')
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 

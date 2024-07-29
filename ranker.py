@@ -1,6 +1,6 @@
 from sklearn.metrics import pairwise_distances
 from app import app, db
-from models import Opportunity
+from models import Opportunity, OptimizedOpportunity
 import numpy as np
 
 def ranker(query, vector):
@@ -19,7 +19,7 @@ def ranker(query, vector):
         print("Fetching opportunities...")
         # opportunities = Opportunity.query.all()
         # embedding_vectors = Opportunity.query.options(load_only(Opportunity.embedding_vector)).all()
-        embedding_vectors = db.session.query(Opportunity.embedding_vector).all()
+        embedding_vectors = db.session.query(OptimizedOpportunity.embedding_vector).all()
         embedding_vectors = [item[0] for item in embedding_vectors]  # Unpack the tuples
         print("Opportunities fetched")
         
@@ -49,7 +49,7 @@ def ranker(query, vector):
 
         # Fetch the opportunities from the results
         for index in min_4_indices:
-            opportunity = Opportunity.query.filter_by(embedding_vector=embedding_vectors[index]).first()
+            opportunity = OptimizedOpportunity.query.filter_by(embedding_vector=embedding_vectors[index]).first()
             top_opportunities.append(opportunity)
 
         output_string = "The user's query: " + query + "\n\n"
