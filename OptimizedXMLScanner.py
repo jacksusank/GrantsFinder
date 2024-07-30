@@ -24,9 +24,9 @@ class CustomXMLLoader:
         
         root = etree.fromstring(xml)
 
-        badSet = {"FundingInstrumentType", "AdditionalInformationOnEligibility", "AgencyCode", "PostDate", "CloseDate", "LastUpdatedDate", "Version", "GrantorContactEmailDescription", "CostSharingOrMatchingRequirement", "ArchiveDate", "AdditionalInformationText", "GrantorContactEmail", "GrantorContactEmailDescription", "GrantorContactText"}
+        # badSet = {"FundingInstrumentType", "AdditionalInformationOnEligibility", "AgencyCode", "PostDate", "CloseDate", "LastUpdatedDate", "Version", "GrantorContactEmailDescription", "CostSharingOrMatchingRequirement", "ArchiveDate", "AdditionalInformationText", "GrantorContactEmail", "GrantorContactEmailDescription", "GrantorContactText"}
 
-        # goodSet = {"OpportunityID", "OpportunityTitle", "OpportunityNumber", "OpportunityCategory", "CategoryOfFundingActivity", "EligibleApplicants", "CFDANumbers", "AgencyName", "AwardCeiling", "Description", "AdditionalInformationURL", }
+        goodSet = {"OpportunityID", "OpportunityTitle", "OpportunityNumber", "OpportunityCategory", "CategoryOfFundingActivity", "EligibleApplicants", "CFDANumbers", "AgencyName", "AwardCeiling", "Description", "AdditionalInformationURL", }
         
         for child in root:
             archive_date = child.find(
@@ -58,23 +58,22 @@ class CustomXMLLoader:
             
             for subchild in child:
                 thisTag = subchild.tag.split("}")[-1]
-                if thisTag in badSet:
-                    print("BadSet caught")
-                    continue
-                if thisTag == "OpportunityID":
-                    opportunityID = subchild.text
-                if thisTag in my_dictionaries: 
-                    if subchild.text in my_dictionaries[thisTag]:   
-                        subchild.text = my_dictionaries[thisTag][subchild.text]
+                if thisTag in goodSet:
+                    print("Goodset caught")
+                    if thisTag == "OpportunityID":
+                        opportunityID = subchild.text
+                    if thisTag in my_dictionaries: 
+                        if subchild.text in my_dictionaries[thisTag]:   
+                            subchild.text = my_dictionaries[thisTag][subchild.text]
+                            myString+=("The " + thisTag + " is " + subchild.text + ". | ")
+                            # print(subchild.tag)
+                        else:
+                            print("Something went wrong")
+                            print(subchild.text)
+                            print(thisTag)
+                    else:
                         myString+=("The " + thisTag + " is " + subchild.text + ". | ")
                         # print(subchild.tag)
-                    else:
-                        print("Something went wrong")
-                        print(subchild.text)
-                        print(thisTag)
-                else:
-                    myString+=("The " + thisTag + " is " + subchild.text + ". | ")
-                    # print(subchild.tag)
             print(opportunityID)
                 
                     

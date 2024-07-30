@@ -7,7 +7,6 @@ from models import Opportunity
 import openai
 import os
 import json
-from sentence_transformers import CrossEncoder
 from fastapi.responses import HTMLResponse
 from ranker import ranker
 
@@ -114,10 +113,6 @@ def chatWithLLM(my_prompt, function="auto"):
                         "type": "string",
                         "description": "The category of the opportunity"
                     },
-                    "FundingInstrumentType": {
-                        "type": "string",
-                        "description": "The funding instrument type of the opportunity"
-                    },
                     "CategoryOfFundingActivity": {
                         "type": "string",
                         "description": "The category of funding activity of the opportunity"
@@ -139,7 +134,7 @@ def chatWithLLM(my_prompt, function="auto"):
                         "description": "The description of the opportunity"
                     }
                 },
-                "required": ["OpportunityTitle", "OpportunityCategory", "FundingInstrumentType", "CategoryOfFundingActivity", "EligibleApplicants", "AdditionalInformationOnEligibility", "AgencyName", "Description"]
+                "required": ["OpportunityTitle", "OpportunityCategory", "CategoryOfFundingActivity", "EligibleApplicants", "AdditionalInformationOnEligibility", "AgencyName", "Description"]
             }
         }
     }
@@ -169,7 +164,6 @@ def chatWithLLM(my_prompt, function="auto"):
             function_response = function_to_call(
                 OpportunityTitle=function_args.get("OpportunityTitle"),
                 OpportunityCategory=function_args.get("OpportunityCategory"),
-                FundingInstrumentType=function_args.get("FundingInstrumentType"),
                 CategoryOfFundingActivity=function_args.get("CategoryOfFundingActivity"),
                 EligibleApplicants=function_args.get("EligibleApplicants"),
                 AdditionalInformationOnEligibility=function_args.get("AdditionalInformationOnEligibility"),
@@ -186,14 +180,13 @@ def chatWithLLM(my_prompt, function="auto"):
     return function_response
 
 
-def ideal_rfp_formatter(OpportunityTitle, OpportunityCategory, FundingInstrumentType, CategoryOfFundingActivity, EligibleApplicants, AdditionalInformationOnEligibility, AgencyName, Description):
+def ideal_rfp_formatter(OpportunityTitle, OpportunityCategory, CategoryOfFundingActivity, EligibleApplicants, AdditionalInformationOnEligibility, AgencyName, Description):
     """
     This function formats the ideal RFP for the user
 
     Args:
         OpportunityTitle (str): The title of the opportunity
         OpportunityCategory (str): The category of the opportunity
-        FundingInstrumentType (str): The funding instrument type of the opportunity
         CategoryOfFundingActivity (str): The category of funding activity of the opportunity
         EligibleApplicants (str): The eligible applicants for the opportunity
         AdditionalInformationOnEligibility (str): Additional information on the eligibility of the opportunity
@@ -203,7 +196,7 @@ def ideal_rfp_formatter(OpportunityTitle, OpportunityCategory, FundingInstrument
     Returns:
         str: A string containing the formatted ideal RFP
     """
-    return f"The OpportunityTitle is {OpportunityTitle}. The OpportunityCategory is {OpportunityCategory}. The FundingInstrumentType is {FundingInstrumentType}. The CategoryOfFundingActivity is {CategoryOfFundingActivity}. The EligibleApplicants is {EligibleApplicants}. The AdditionalInformationOnEligibility is {AdditionalInformationOnEligibility}. The AgencyName is {AgencyName}. The Description is {Description}."
+    return f"The OpportunityTitle is {OpportunityTitle}. The OpportunityCategory is {OpportunityCategory}. The CategoryOfFundingActivity is {CategoryOfFundingActivity}. The EligibleApplicants is {EligibleApplicants}. The AdditionalInformationOnEligibility is {AdditionalInformationOnEligibility}. The AgencyName is {AgencyName}. The Description is {Description}."
 
 
 def opportunity_output_formatter(opportunities):
@@ -233,6 +226,7 @@ def opportunity_output_formatter(opportunities):
         output += f"Grants.gov Results Detail: {opportunity['Grants.gov URL']}\n"
         output += f"Additional Info: {opportunity['AdditionalInformationURL']}\n"
 
+    print("Done Reformatting")
     return output
 
 
@@ -245,7 +239,7 @@ async def home(request: Request, query: str = Form(None)):
 
 
     if query:
-        ideal_opportunity = chatWithLLM(f"I want you to create one fake RFP that would be ideal for someone who has this question: {query}. Make sure to include the corresponding fake OpportunityTitle, OpportunityCategory, FundingInstrumentType, CategoryOfFundingActivity, EligibleApplicants, AdditionalInformationOnEligibility, AgencyName, and Description.", "ideal_rfp_formatter")
+        ideal_opportunity = chatWithLLM(f"I want you to create one fake RFP that would be ideal for someone who has this question: {query}. Make sure to include the corresponding fake OpportunityTitle, OpportunityCategory, CategoryOfFundingActivity, EligibleApplicants, AdditionalInformationOnEligibility, AgencyName, and Description.", "ideal_rfp_formatter")
 
         vectorized_ideal_opportunity = model.encode(ideal_opportunity, normalize_embeddings=False)
         fully_formatted_ideal_opportunity = [embedding.tolist() for embedding in vectorized_ideal_opportunity]
@@ -253,8 +247,6 @@ async def home(request: Request, query: str = Form(None)):
         
 
         llm_input = promptMaker(ranker(query, fully_formatted_ideal_opportunity))
-
-        print(llm_input)
 
         response = chatWithLLM(llm_input, "opportunity_output_formatter")
 
