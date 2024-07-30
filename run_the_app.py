@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Request, Form
-# from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
@@ -20,10 +19,7 @@ app = FastAPI()
 # Load environment variables
 load_dotenv()
 
-# # Mount static directory (if needed)
-# app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Load templates directory (if needed)
 templates = Jinja2Templates(directory="templates")
 
 # Initialize models and connections
